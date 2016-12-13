@@ -84,7 +84,7 @@ mod tests {
     use Joinable;
 
     #[test]
-    fn it_works() {
+    fn move_iterators() {
         let v = vec!['a', 'b', 'c'];
         let it = v.iter().enumerate();
 
@@ -96,18 +96,16 @@ mod tests {
         println!("{:?}",x);
     }
 
-    /*
     #[test]
-    fn it_doesnt_work() {
+    fn referencing_iterators() {
         let v: Vec<(u32,u32)> = vec![(0,11), (1,22), (2,33)];
         let mut it = v.iter();
 
         let w: Vec<(u32,u32)> = vec![(0,11), (1,22), (2,33)];
         let it2 =  w.iter();
 
-        let mut join_it = it.join(it2);
+        let mut join_it = it.join(it2, |&(x,_)| x, |&(x,_)| x);
         let x = join_it.next();
         println!("{:?}",x);
     }
-    */
 }
