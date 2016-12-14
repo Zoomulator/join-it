@@ -142,4 +142,19 @@ mod tests {
 
         assert_eq!( vec![('a',66), ('b',77), ('c',88)], join_it.collect::<Vec<(char,u32)>>() );
     }
+
+
+    #[test]
+    fn key_jumping() {
+        let v = vec![(1,'b'), (2,'c'), (3,'d')];
+        let it = v.iter();
+
+        let w = vec![(0,66), (1,77), (3,99), (4,11)];
+        let it2 =  w.iter();
+
+        let join_it = it.join(it2, |&&(x,_)| x, |&&(x,_)| x)
+            .map(|(&(_,a),&(_,b))| (a, b));
+
+        assert_eq!( vec![('b',77), ('d',99)], join_it.collect::<Vec<(char,u32)>>() );
+    }
 }
