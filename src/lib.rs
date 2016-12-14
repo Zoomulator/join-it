@@ -8,12 +8,12 @@ pub struct JoinIt<I, J, KI, KJ>
     kj: KJ,
 }
 
-pub fn join_it<I,J,K,KI,KJ,F>( i: I, j: J, ki: KI, kj: KJ, f: F ) where
+pub fn join_it<I,J,K,KI,KJ,F>( i: I, j: J, ki: KI, kj: KJ, mut f: F ) where
     I: IntoIterator,
     J: IntoIterator,
     KI: Fn(&I::Item) -> K,
     KJ: Fn(&J::Item) -> K,
-    F: Fn(&I::Item, &J::Item),
+    F: FnMut(&I::Item, &J::Item),
     K: Ord
 {
     use std::cmp::Ordering::*;
@@ -107,9 +107,12 @@ mod tests {
         let w = vec![66, 77, 88];
         let it2 =  w.iter().enumerate();
 
+        let mut r = vec![];
         join_it( it, it2, |&(x,_)| x, |&(x,_)| x, |&(_,a), &(_,b)| {
-            println!("({:?}, {:?})", a, b);
+            r.push((*a,*b));
         });
+
+        assert_eq!( vec![('a',66), ('b',77), ('c',88)], r );
     }
 
     #[test]
@@ -120,25 +123,23 @@ mod tests {
         let w = vec![66, 77, 88];
         let it2 =  w.iter().enumerate();
 
-        let join_it = it.join(it2, |&(x,_)| x, |&(x,_)| x);
+        let join_it = it.join(it2, |&(x,_)| x, |&(x,_)| x)
+            .map(|((_,a),(_,b))| (*a,*b));
 
-        for x in join_it {
-            println!("{:?}",x);
-        }
+        assert_eq!( vec![('a',66), ('b',77), ('c',88)], join_it.collect::<Vec<(char,u32)>>() );
     }
 
     #[test]
     fn referencing_iterators() {
-        let v: Vec<(u32,u32)> = vec![(0,11), (1,22), (2,33)];
+        let v = vec![(0,'a'), (1,'b'), (2,'c')];
         let it = v.iter();
 
-        let w: Vec<(u32,u32)> = vec![(0,11), (1,22), (2,33)];
+        let w = vec![(0,66), (1,77), (2,88)];
         let it2 =  w.iter();
 
-        let join_it = it.join(it2, |&&(x,_)| x, |&&(x,_)| x);
+        let join_it = it.join(it2, |&&(x,_)| x, |&&(x,_)| x)
+            .map(|(&(_,a),&(_,b))| (a, b));
 
-        for x in join_it {
-            println!("{:?}",x);
-        }
+        assert_eq!( vec![('a',66), ('b',77), ('c',88)], join_it.collect::<Vec<(char,u32)>>() );
     }
 }
