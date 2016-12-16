@@ -34,7 +34,7 @@ pub fn join_it<I,J,K,KI,KJ,F>( i: I, j: J, ki: KI, kj: KJ, mut f: F ) where
 }
 
 
-impl<'a,I,J,KI,KJ,K> Iterator for JoinIt<I,J,KI,KJ> where
+impl<I,J,KI,KJ,K> Iterator for JoinIt<I,J,KI,KJ> where
     I: Iterator,
     J: Iterator,
     I::Item: Clone,
