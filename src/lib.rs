@@ -157,4 +157,26 @@ mod tests {
 
         assert_eq!( vec![('b',77), ('d',99)], join_it.collect::<Vec<(char,u32)>>() );
     }
+
+
+    struct A {
+        key: u32,
+        c: char
+    }
+
+    struct B {
+        key: u32,
+        i: i32
+    }
+
+    #[test]
+    fn keys_in_structs() {
+        let v = vec![A{key:0, c:'a'}, A{key:1, c:'b'}, A{key:2,c:'c'}];
+        let w = vec![B{key:1, i:10}, B{key:2,i:22}, B{key:3, i:33}];
+
+        let join_it = v.iter().join(w.iter(), |&&A{key,..}| key, |&&B{key,..}| key)
+            .map(|(&A{c,..}, &B{i,..})| (c,i));
+
+        assert_eq!( vec![('b',10),('c',22)], join_it.collect::<Vec<(char,i32)>>() );
+    }
 }
