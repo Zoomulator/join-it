@@ -107,15 +107,15 @@ mod tests {
     use Joinable;
     #[test]
     fn internal_iterator() {
-        let v = vec!['a', 'b', 'c'];
-        let it = v.iter().enumerate();
+        let v = vec![(0,'a'), (1,'b'), (2,'c')];
+        let it = v.iter(); // Iterator returning &({int}, char).
 
         let w = vec![66, 77, 88];
-        let it2 =  w.iter().enumerate();
+        let it2 =  w.iter().enumerate(); // Iterator returning ({int}, &{int}).
 
         let mut r = vec![];
-        join_it( it, it2, |(x,_)| x, |(x,_)| x, |(_,a), (_,b)| {
-            r.push((*a,*b));
+        join_it( it, it2, |&(x,_)| x, |(x,_)| x, |&(_,a), (_,b)| {
+            r.push((a,*b));
         });
 
         assert_eq!( vec![('a',66), ('b',77), ('c',88)], r );
