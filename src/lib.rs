@@ -3,7 +3,7 @@
 //! internal iteration.
 //!
 //! # Iterator
-//! This module extends the `IntoIterator` trait with a [`join`] method, taking another
+//! This module extends the `IntoIterator` trait with a `join` method via the `Joinable` trait, taking another
 //! `IntoIterator` along with two key extracting closures and produces a new iterator, the output
 //! of which will be a joined row for each `next()`.
 //!
@@ -22,7 +22,7 @@
 //! ```
 //!
 //! # Inner iteration
-//! You're also provided with a function that runs an inner iteration. [`join_it`] takes two
+//! You're also provided with a function that runs an inner iteration. `join_it` takes two
 //! `IntoIterator`s, their key extractor closures and finally a body closure to handle the joined
 //! rows.
 //!
