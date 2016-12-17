@@ -7,6 +7,20 @@
 //! `IntoIterator` along with two key extracting closures and produces a new iterator, the output
 //! of which will be a joined row for each `next()`.
 //!
+//! ```
+//! use join_it::Joinable;
+//!
+//! let v = vec![(0,'a'),(2,'c')];
+//! let w = vec![33,44,55,66];
+//! let i = v.iter();
+//! let j = w.iter().enumerate();
+//!
+//! for (&(k0,a),(k1,b)) in i.join(j, |&(k,_)| k, |(k,_)| k) {
+//!     assert_eq!(k0, k1);
+//!     println!("Join result: ({},{})", a, *b);
+//! }
+//! ```
+//!
 //! # Inner iteration
 //! You're also provided with a function that runs an inner iteration. [`join_it`] takes two
 //! `IntoIterator`s, their key extractor closures and finally a body closure to handle the joined
@@ -32,6 +46,16 @@ pub struct JoinIt<I, J, KI, KJ>
 
 
 /// Maps f over the join between `i` and `j`, based on the key extractors `ki` and `kj`.
+///
+/// ```
+/// use join_it::join_it;
+/// let v = vec![33,44,55,66].into_iter().enumerate();
+/// let w = vec![(0,'a'),(2,'c')];
+/// join_it(v, w, |(k,_)| k, |(k,_)| k, |(k0,a),(k1,b)| {
+///     assert_eq!(k0, k1);
+///     println!("Join result: ({},{})", a, b);
+/// });
+/// ```
 pub fn join_it<I,J,K,KI,KJ,F>( i: I, j: J, ki: KI, kj: KJ, mut f: F ) where
     I: IntoIterator,
     J: IntoIterator,
