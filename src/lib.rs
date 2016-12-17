@@ -69,11 +69,11 @@ impl<I,J,KI,KJ,K> Iterator for JoinIt<I,J,KI,KJ> where
 
 
 trait Joinable
-    where Self: Iterator + Sized,
+    where Self: IntoIterator + Sized,
           Self::Item: Copy
 {
-    fn join<J,KI,KJ,K>(self, J, KI, KJ) -> JoinIt<Self,J,KI,KJ> where
-        J: Iterator,
+    fn join<J,KI,KJ,K>(self, J, KI, KJ) -> JoinIt<Self::IntoIter,J::IntoIter,KI,KJ> where
+        J: IntoIterator,
         J::Item: Copy,
         KI: FnMut(Self::Item) -> K,
         KJ: FnMut(J::Item) -> K;
@@ -82,18 +82,18 @@ trait Joinable
 
 
 impl<I> Joinable for I where
-    I: Iterator,
+    I: IntoIterator,
     I::Item: Copy
 {
-    fn join<J,KI,KJ,K>(self, iter: J, ki: KI, kj: KJ) -> JoinIt<I,J,KI,KJ> where
-        J: Iterator,
+    fn join<J,KI,KJ,K>(self, iter: J, ki: KI, kj: KJ) -> JoinIt<I::IntoIter,J::IntoIter,KI,KJ> where
+        J: IntoIterator,
         J::Item: Copy,
         KI: FnMut(Self::Item) -> K,
         KJ: FnMut(J::Item) -> K,
     {
         JoinIt {
-            i: self,
-            j: iter,
+            i: self.into_iter(),
+            j: iter.into_iter(),
             ki: ki,
             kj: kj
         }
@@ -160,6 +160,20 @@ mod tests {
 
         let join_it = it.join(it2, |&(x,_)| x, |&(x,_)| x)
             .map(|(&(_,a),&(_,b))| (a, b));
+
+        assert_eq!( vec![('b',77), ('d',99)], join_it.collect::<Vec<(char,u32)>>() );
+    }
+
+
+    #[test]
+    fn into_iter_consumption() {
+        let v = vec![(1,'b'), (2,'c'), (3,'d')];
+
+        let w = vec![(0,66), (1,77), (3,99), (4,11)];
+
+        // Join v & w 'directly' via IntoIter trait.
+        let join_it = v.join(w, |(x,_)| x, |(x,_)| x)
+            .map(|((_,a),(_,b))| (a, b));
 
         assert_eq!( vec![('b',77), ('d',99)], join_it.collect::<Vec<(char,u32)>>() );
     }
