@@ -1,4 +1,26 @@
+//! # Joins
+//! Sequences sorted by a common key can be joined (like a table inner join) into an iterator or via an
+//! internal iteration.
+//!
+//! # Iterator
+//! This module extends the `IntoIterator` trait with a [`join`] method, taking another
+//! `IntoIterator` along with two key extracting closures and produces a new iterator, the output
+//! of which will be a joined row for each `next()`.
+//!
+//! # Inner iteration
+//! You're also provided with a function that runs an inner iteration. [`join_it`] takes two
+//! `IntoIterator`s, their key extractor closures and finally a body closure to handle the joined
+//! rows.
+//!
+//! # The algorithm
+//! Given two sequences with the values sorted by a unique key, you're able to make a join between keys with
+//! O(n) complexity. The keys of the current iterator values are compared. It's a match whenever
+//! the two keys are equal, whereby a tuple of the two values are returned as a result of a joined row.
+//! If the keys don't match, the lesser key's iterator will increment until they do or until one of
+//! the iterators returns `None`.
+
 use std::cmp::Ord;
+
 
 pub struct JoinIt<I, J, KI, KJ>
 {
@@ -8,6 +30,8 @@ pub struct JoinIt<I, J, KI, KJ>
     kj: KJ,
 }
 
+
+/// Maps f over the join between `i` and `j`, based on the key extractors `ki` and `kj`.
 pub fn join_it<I,J,K,KI,KJ,F>( i: I, j: J, ki: KI, kj: KJ, mut f: F ) where
     I: IntoIterator,
     J: IntoIterator,
