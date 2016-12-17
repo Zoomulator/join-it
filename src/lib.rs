@@ -92,7 +92,7 @@ impl<I,J,KI,KJ,K> Iterator for JoinIt<I,J,KI,KJ> where
 
 
 
-trait Joinable
+pub trait Joinable
     where Self: IntoIterator + Sized,
           Self::Item: Copy
 {
@@ -128,7 +128,6 @@ impl<I> Joinable for I where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use Joinable;
     #[test]
     fn internal_iterator() {
         let v = vec![(0,'a'), (1,'b'), (2,'c')];
