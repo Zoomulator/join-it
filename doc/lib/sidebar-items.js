@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["join_it","Maps f over the join between `i` and `j`, based on the key extractors `ki` and `kj`."]],"struct":[["JoinIt",""]],"trait":[["Joinable",""]]});

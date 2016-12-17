@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `lib` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, lib">
+
+    <title>lib - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'lib', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>lib</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-0' class='srclink' href='../src/lib/lib.rs.html#1-249' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'>
+<h1 id='joins' class='section-header'><a href='#joins'>Joins</a></h1>
+<p>Sequences sorted by a common key can be joined (like a table inner join) into an iterator or via an
+internal iteration.</p>
+
+<h1 id='iterator' class='section-header'><a href='#iterator'>Iterator</a></h1>
+<p>This module extends the <code>IntoIterator</code> trait with a <code>join</code> method via the <code>Joinable</code> trait, taking another
+<code>IntoIterator</code> along with two key extracting closures and produces a new iterator, the output
+of which will be a joined row for each <code>next()</code>.</p>
+
+<pre class='rust rust-example-rendered'>
+<span class='kw'>use</span> <span class='ident'>join_it</span>::<span class='ident'>Joinable</span>;
+
+<span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[(<span class='number'>0</span>,<span class='string'>&#39;a&#39;</span>),(<span class='number'>2</span>,<span class='string'>&#39;c&#39;</span>)];
+<span class='kw'>let</span> <span class='ident'>w</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>33</span>,<span class='number'>44</span>,<span class='number'>55</span>,<span class='number'>66</span>];
+<span class='kw'>let</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>v</span>.<span class='ident'>iter</span>();
+<span class='kw'>let</span> <span class='ident'>j</span> <span class='op'>=</span> <span class='ident'>w</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>();
+
+<span class='kw'>for</span> (<span class='kw-2'>&amp;</span>(<span class='ident'>k0</span>,<span class='ident'>a</span>),(<span class='ident'>k1</span>,<span class='ident'>b</span>)) <span class='kw'>in</span> <span class='ident'>i</span>.<span class='ident'>join</span>(<span class='ident'>j</span>, <span class='op'>|</span><span class='kw-2'>&amp;</span>(<span class='ident'>k</span>,_)<span class='op'>|</span> <span class='ident'>k</span>, <span class='op'>|</span>(<span class='ident'>k</span>,_)<span class='op'>|</span> <span class='ident'>k</span>) {
+    <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>k0</span>, <span class='ident'>k1</span>);
+    <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;Join result: ({},{})&quot;</span>, <span class='ident'>a</span>, <span class='op'>*</span><span class='ident'>b</span>);
+}<a class='test-arrow' target='_blank' href=''>Run</a></pre>
+
+<h1 id='inner-iteration' class='section-header'><a href='#inner-iteration'>Inner iteration</a></h1>
+<p>You&#39;re also provided with a function that runs an inner iteration. <code>join_it</code> takes two
+<code>IntoIterator</code>s, their key extractor closures and finally a body closure to handle the joined
+rows.</p>
+
+<h1 id='the-algorithm' class='section-header'><a href='#the-algorithm'>The algorithm</a></h1>
+<p>Given two sequences with the values sorted by a unique key, you&#39;re able to make a join between keys with
+O(n) complexity. The keys of the current iterator values are compared. It&#39;s a match whenever
+the two keys are equal, whereby a tuple of the two values are returned as a result of a joined row.
+If the keys don&#39;t match, the lesser key&#39;s iterator will increment until they do or until one of
+the iterators returns <code>None</code>.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.JoinIt.html'
+                                  title='lib::JoinIt'>JoinIt</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.Joinable.html'
+                                  title='lib::Joinable'>Joinable</a></td>
+                           <td class='docblock-short'>
+                                
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.join_it.html'
+                                  title='lib::join_it'>join_it</a></td>
+                           <td class='docblock-short'>
+                                <p>Maps f over the join between <code>i</code> and <code>j</code>, based on the key extractors <code>ki</code> and <code>kj</code>.</p>
+                           </td>
+                       </tr></table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "lib";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
